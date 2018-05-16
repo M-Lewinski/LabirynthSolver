@@ -1,8 +1,9 @@
 type labField =
-    | Start of int
-    | End of int
-    | Path of int
-    | Wall of int;;
+    | Nothing
+    | Start
+    | End
+    | Path
+    | Wall;;
 
 type labirynth = {
     fields: labField array array;
