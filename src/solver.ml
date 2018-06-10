@@ -1,6 +1,8 @@
 open LabLoader
 open LabSolver
 open Printf
+open LabType
+
 
 let input_file = "input.txt"
 exception FileNotFound of string
@@ -13,6 +15,7 @@ let () =
     printLabirynth labirynth;
 
   printf "Validating labirynth\n";
+  if validateLabirynth labirynth != true then raise (InvalidFile "Labirynth is invalid.\n It should have 1 starting point and >0 exit points");
 
   printf "Solving labirynth\n";
 
