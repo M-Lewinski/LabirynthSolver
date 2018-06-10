@@ -1,16 +1,23 @@
 exception InvalidFile of string;;
 
-type labField =
+type labFieldType =
     | Nothing
-    | Start of int*int
-    | End of int*int
-    | Path of int*int
-    | Wall of int*int;;
+    | Start
+    | End
+    | Path
+    | Wall;;
+
+type labNode = {
+    fieldPos: int * int;
+    fieldType: labFieldType;
+    next: labNode list;
+    visited: bool;
+}
 
 type labirynth = {
-    fields: labField array array;
+    fields: labFieldType array array;
     width: int;
     height: int;
-    starts: labField list;
-    ends: labField list
+    starts: labNode list;
+    ends: labNode list
     };;

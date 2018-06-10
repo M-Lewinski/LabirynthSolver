@@ -6,8 +6,18 @@ let findStartsEnds lab_fields height width =
         for i = 0 to height-1 do
             for j = 0 to width-1 do
                 match lab_fields.(j).(i) with
-                | Start (j,i) -> starts := (!starts)@[lab_fields.(j).(i)]
-                | End (j,i) -> ends := (!ends)@[lab_fields.(j).(i)]
+                | Start -> starts := (!starts)@[{
+                    fieldPos=j,i;
+                    fieldType=Start;
+                    next=[];
+                    visited=false;
+                }]
+                | End -> ends := (!ends)@[{
+                    fieldPos=j,i;
+                    fieldType=Start;
+                    next=[];
+                    visited=false;
+                }]
                 | _ -> ()
             done;
         done;
@@ -24,10 +34,10 @@ let loadLabirynth fine_name =
                 let line = input_line file in
                 for j = 0 to wdth-1 do
                     match line.[j] with
-                    | '-' -> lab_fields.(j).(i) <- Wall (j, i)
-                    | 'S' -> lab_fields.(j).(i) <- Start (j, i)
-                    | '0' when j==0 || i == 0 || j==wdth-1 || i=hght-1 -> lab_fields.(j).(i) <- End (j, i)
-                    | '0' -> lab_fields.(j).(i) <- Path (j, i)
+                    | '-' -> lab_fields.(j).(i) <- Wall
+                    | 'S' -> lab_fields.(j).(i) <- Start
+                    | '0' when j==0 || i == 0 || j==wdth-1 || i=hght-1 -> lab_fields.(j).(i) <- End
+                    | '0' -> lab_fields.(j).(i) <- Path
                     | x -> raise (InvalidFile (Printf.sprintf "Labirynth contains invalid character %c" x));
                 done;
                 if i == hght-1 then close_in file;
@@ -47,35 +57,33 @@ let loadLabirynth fine_name =
 
 let validateLabirynth lab = List.length lab.starts == 1 && List.length lab.ends >=1;;
 
-let printLabField field =
-    match field with
-    | Path (j, i)
-    | Wall (j, i)
-    | Start (j, i)
-    | End (j, i) -> ("("^(string_of_int j)^", "^(string_of_int i)^")");
-    | Nothing -> "";;
+let printLabNode node =
+    let printPos (x,y) =
+        ("("^(string_of_int x)^", "^(string_of_int y)^")")
+    in printPos node.fieldPos;;
 
-let fieldListToStr list =
+let nodeListToStr list =
   let rec string_of_list list =
     match list with
-      [] -> ""
-      | h::tail -> printLabField h^";"^string_of_list tail
+      | [] -> ""
+      | [x] -> printLabNode x
+      | h::tail -> printLabNode h^";"^string_of_list tail
       in
         ("["^(string_of_list list)^"]");;
 
 let printLabirynth lab =
     Printf.printf "Lab width: %d\n" lab.width;
     Printf.printf "Lab height: %d\n" lab.height;
-    Printf.printf "Start: %s\n" (fieldListToStr lab.starts);
-    Printf.printf "Exits: %s\n" (fieldListToStr lab.ends);
+    Printf.printf "Start: %s\n" (nodeListToStr lab.starts);
+    Printf.printf "Exits: %s\n" (nodeListToStr lab.ends);
     for i = 0 to lab.height-1 do
         for j = 0 to lab.width-1 do
             let checkType x =
                 match x with
-                | Start (j,i) -> "\x1b[30m\x1b[42mST"
-                | End (j,i) -> "\x1b[30m\x1b[42mEX"
-                | Wall (j,i) -> "\x1b[31m\x1b[41m▮▮"
-                | Path (j,i) -> "\x1b[32m\x1b[42m▯▯"
+                | Start -> "\x1b[30m\x1b[42mST"
+                | End -> "\x1b[30m\x1b[42mEX"
+                | Wall -> "\x1b[31m\x1b[41m▮▮"
+                | Path -> "\x1b[32m\x1b[42m▯▯"
                 |  _ -> " "
             in Printf.printf "%s" (checkType lab.fields.(j).(i));
         done;
