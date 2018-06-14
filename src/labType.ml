@@ -1,18 +1,25 @@
 exception InvalidFile of string;;
 
-type labFieldType =
-    | Nothing
+type labNodeType =
     | Start
     | End
-    | Path
-    | Wall;;
+    | Cross;;
 
 type labNode = {
-    fieldPos: int * int;
-    fieldType: labFieldType;
-    next: labNode list;
+    nodePos: int * int;
+    nodeType: labNodeType;
+    mutable next: labNode list;
     visited: bool;
 }
+
+type labFieldType =
+    | Nothing
+    | Path
+    | Wall
+    | Cross of labNode
+    | Start of labNode
+    | End of labNode
+    ;;
 
 type labirynth = {
     fields: labFieldType array array;

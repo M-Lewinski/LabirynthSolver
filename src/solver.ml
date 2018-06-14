@@ -15,7 +15,10 @@ let () =
     printLabirynth labirynth;
 
   printf "Validating labirynth\n";
-  if validateLabirynth labirynth != true then raise (InvalidFile "Labirynth is invalid.\n It should have 1 starting point and >0 exit points");
+  if validateLabirynth labirynth != true then raise (InvalidFile "Labirynth is invalid.\n It must have 1 starting point and > 0 exit points");
+
+  let labirynth = buildGraph (findAllCross labirynth) in
+    printLabirynth labirynth;
 
   printf "Solving labirynth\n";
 

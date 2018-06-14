@@ -5,3 +5,6 @@ val loadLabirynth: string -> labirynth
 (* validateLabirynth chacks if labirynth is valid (contains start and end ) *)
 val validateLabirynth: labirynth -> bool
 val printLabirynth: labirynth -> unit
+val findAllCross: labirynth -> labirynth
+val buildGraph: labirynth -> labirynth
+val solveLab: labirynth -> labirynth
