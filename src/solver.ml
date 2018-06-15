@@ -24,4 +24,5 @@ let () =
   printf "Solving labirynth\n";
   let solution = solveLab labirynth in  printSolution solution;
 
+  let labirynth = drawSolution labirynth solution in printLabirynth labirynth;
   printf "Labirynth solver\n";

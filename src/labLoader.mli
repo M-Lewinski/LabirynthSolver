@@ -10,3 +10,4 @@ val findAllCross: labirynth -> labirynth
 val buildGraph: labirynth -> labirynth
 val solveLab: labirynth -> labNode list
 val printSolution: labNode list -> unit
+val drawSolution: labirynth -> labNode list -> labirynth

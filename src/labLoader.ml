@@ -19,6 +19,12 @@ let isPath labField =
         | Path -> true
         | _ -> false;;
 
+let isPathOrCross labField =
+    match labField with
+        | Path
+        | Cross _ -> true
+        | _ -> false;;
+
 let fieldOrNothing lab x y =
     match (x>=0 && y>=0 && x<lab.width && y<lab.height) with
     | true -> lab.fields.(x).(y)
@@ -26,7 +32,7 @@ let fieldOrNothing lab x y =
 
 let isCross lab baseX baseY =
     let isCorner lab bX bY dX dY =
-        (isPath (fieldOrNothing lab (bX+dX) bY)) && (isPath (fieldOrNothing lab bX (bY+dY)))
+        (isPathOrCross (fieldOrNothing lab (bX+dX) bY)) && (isPathOrCross (fieldOrNothing lab bX (bY+dY)))
     in
         (isPath lab.fields.(baseX).(baseY)) &&
         (isCorner lab baseX baseY (-1) 1 ||
@@ -172,7 +178,7 @@ let printLabirynth lab =
                 | Cross _ -> "\x1b[30m\x1b[42m{}"
                 | Wall -> "\x1b[31m\x1b[41m▮▮"
                 | Path -> "\x1b[32m\x1b[42m▯▯"
-                |  _ -> " "
+                |  _ -> "\x1b[34m\x1b[44m=="
             in Printf.printf "%s" (checkType lab.fields.(j).(i));
         done;
         Printf.printf "\x1b[0m\n";
@@ -198,9 +204,8 @@ let solveLab lab =
                 | h :: t ->
                 try
                     nextNode h prevList
-                with e ->
-                    goToNexts node t prevList
-
+                with NotFound ->
+                    goToNexts node t prevList;
 
     in (match node.nodeType with
         | End -> prevList@[node]
@@ -214,4 +219,35 @@ let solveLab lab =
 let printSolution list =
     Printf.printf "\n%s\n" (nodeListToStr list)
 
-(* let drawSolution lab solList = *)
+let calcDir x y =
+    let diff x y = y-x
+    in
+        match (diff x y) with
+        | 0 -> 0
+        | x when x > 0 -> 1
+        | x when x < 0 -> -1
+        | _ -> 0
+;;
+
+
+let drawSolution lab solList =
+    let rec iterList solList =
+
+        let rec drawLine nodeX nodeY nextListToDraw =
+            iterList nextListToDraw;
+            let rec drawStep (baseX, baseY) (maxX, maxY) dX dY =
+                lab.fields.(baseX).(baseY) <- SolPath;
+                if (baseX+dX) == maxX && (baseY+dY) == maxY then lab.fields.(baseX+dX).(baseY+dY) <- SolPath;
+
+                match (baseX+dX) != maxX || (baseY+dY) != maxY with
+                | true -> drawStep ((baseX+dX), (baseY+dY)) (maxX,maxY) dX dY
+                | false -> ()
+
+            in drawStep nodeX.nodePos nodeY.nodePos (calcDir (getX nodeX.nodePos) (getX nodeY.nodePos)) (calcDir (getY nodeX.nodePos) (getY nodeY.nodePos))
+
+        in match solList with
+        | x::y::tail -> drawLine x y (y::tail)
+        | _ -> ()
+
+    in iterList solList;
+    lab;;
