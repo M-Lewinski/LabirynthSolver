@@ -189,10 +189,29 @@ let printLabirynth lab =
 
 
 let solveLab lab =
-    let rec goNext node =
-        let rec goToNexts list =
+    let rec nextNode node prevList =
+
+        let rec goToNexts node list prevList =
+            node.visited <- true;
             match list with
-                | h :: t when h.visited == false -> goNext h
-        in goToNexts node.next
-    in goNext (getStart lab.starts)
-    lab;;
+                [] -> raise NotFound
+                | h :: t ->
+                try
+                    nextNode h prevList
+                with e ->
+                    goToNexts node t prevList
+
+
+    in (match node.nodeType with
+        | End -> prevList@[node]
+        | Start -> goToNexts node node.next (prevList@[node])
+        | Cross when node.visited == false && (List.length node.next) > 0 -> goToNexts node node.next (prevList@[node])
+        | Cross -> raise NotFound
+    )
+
+    in nextNode (getStart lab.starts) [];;
+
+let printSolution list =
+    Printf.printf "\n%s\n" (nodeListToStr list)
+
+(* let drawSolution lab solList = *)

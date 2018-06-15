@@ -1,4 +1,5 @@
 exception InvalidFile of string;;
+exception NotFound;;
 
 type labNodeType =
     | Start
@@ -9,7 +10,7 @@ type labNode = {
     nodePos: int * int;
     nodeType: labNodeType;
     mutable next: labNode list;
-    visited: bool;
+    mutable visited: bool;
 };;
 
 type labFieldType =
@@ -19,6 +20,7 @@ type labFieldType =
     | Cross of labNode
     | Start of labNode
     | End of labNode
+    | SolPath
     ;;
 
 type labirynth = {

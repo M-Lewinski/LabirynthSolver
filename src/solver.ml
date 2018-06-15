@@ -20,6 +20,8 @@ let () =
   let labirynth = buildGraph (findAllCross labirynth) in
     printLabirynth labirynth;
 
+
   printf "Solving labirynth\n";
+  let solution = solveLab labirynth in  printSolution solution;
 
   printf "Labirynth solver\n";
